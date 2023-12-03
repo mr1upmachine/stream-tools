@@ -1,0 +1,55 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Sean Hale">
+  <meta name="description" content="Don't be nosey">
+
+  <title>Mr1upMachine</title>
+  <style>
+    html {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .rainbow {
+      animation-name: backgroundColorPalette;
+      animation-duration: 20s;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+      animation-timing-function: linear;
+    }
+
+    @keyframes backgroundColorPalette {
+      0% {
+        background: #ee6055;
+      }
+      25% {
+        background: #60d394;
+      }
+      50% {
+        background: #aaf683;
+      }
+      75% {
+        background: #ffd97d;
+      }
+      100% {
+        background: #ff9b85;
+      }
+    }
+  </style>
+</head>
+
+<body class="rainbow">
+</body>
+</html>

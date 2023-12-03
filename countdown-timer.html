@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="author" content="Sean Hale" />
+    <meta name="description" content="Don't be nosey" />
+
+    <title>Countdown Timer</title>
+    <style type="text/css">
+      @font-face {
+        font-family: "Gothic Bold";
+        src: url("../Fonts/gothicb.woff2") format("woff2");
+      }
+
+      html {
+        height: 100%;
+        width: 100%;
+        color: #ffffff;
+        font-weight: bold;
+        background-color: #007500;
+      }
+
+      body {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-flow: column nowrap;
+        font-family: "Gothic Bold", sans-serif;
+        user-select: none;
+      }
+
+      .main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1 1 auto;
+        font-size: 375px;
+        border: 3px red solid;
+        -webkit-text-stroke: 8px black;
+      }
+
+      footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 0 0 auto;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      footer button,
+      footer input {
+        font-size: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="timer-box">
+        <span id="timer"></span>
+      </div>
+    </div>
+    <footer>
+      <button id="startbutton">start</button>
+      <button id="stopbutton">stop</button>
+      <button id="resetbutton">reset</button>
+      <button id="addminutebutton">add 60s</button>
+      <button id="subminutebutton">sub 60s</button>
+      <input id="lengthinput" type="number" />
+    </footer>
+
+    <script>
+      const DEFAULT_LENGTH = 300;
+
+      function toTimerText(t) {
+        const min = Math.floor(t / 60);
+        const sec = (t % 60).toLocaleString("en-US", {
+          minimumIntegerDigits: 2,
+          useGrouping: false,
+        });
+        return `${min}:${sec}`;
+      }
+
+      function resetTimer() {
+        setTimer(DEFAULT_LENGTH);
+      }
+
+      function setTimer(newTime) {
+        time = newTime;
+        lengthinput.value = newTime;
+        timer.innerText = toTimerText(newTime);
+      }
+
+      let time = parseInt(lengthinput.value, 10);
+      let intervalId;
+
+      resetTimer();
+
+      startbutton.onclick = () => {
+        setTimer(time);
+
+        intervalId = setInterval(() => {
+          if (time > 0) {
+            setTimer(time - 1);
+          }
+        }, 1000);
+      };
+
+      stopbutton.onclick = () => {
+        clearInterval(intervalId);
+      };
+
+      resetbutton.onclick = () => {
+        clearInterval(intervalId);
+        resetTimer();
+      };
+
+      addminutebutton.onclick = () => {
+        setTimer(time + 60);
+      };
+
+      subminutebutton.onclick = () => {
+        setTimer(time > 60 ? time - 60 : 0);
+      };
+
+      lengthinput.onchange = (event) => {
+        setTimer(event.target.value);
+      };
+    </script>
+  </body>
+</html>
