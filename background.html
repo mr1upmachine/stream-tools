@@ -69,13 +69,25 @@
 <body>
 
 <script>
-  const columns = 48;
-  const rows = 27;
-  const size = '30px';
+  const params = new URLSearchParams(window.location.search);
+  const getNumberParam = (name) => {
+    const value = parseInt(params.get(name), 10);
+    return isNaN(value) ? null : value;
+  };
+  const getStringParam = (name) => params.get(name);
+  const getCommaListParam = (name) => {
+    const value = params.get(name);
+    console.log('value: ', value);
+    return value ? value.split(',').map(str => `#${str}`) : null
+  };
+    
+  const columns = getNumberParam('columns') ?? 48;
+  const rows = getNumberParam('rows') ?? 27;
+  const size = getStringParam('size') ?? '30px';
   /** Time in seconds for animation */
-  const animationDuration = 120;
+  const animationDuration = getNumberParam('animationDuration') ?? 120;
   /** Colors to be used. Supports exactly 7 colors **/
-  const colors = ['#ee6055', '#c288e3', '#52c2ff', "#55b566", '#60d394', '#ffd97d', '#fa875a'];
+  const colors = getCommaListParam('colors') ?? ["#ee6055", "#c288e3", "#52c2ff", "#55b566", "#60d394", "#ffd97d", "#fa875a"];
 
   // Initialize colors
   for (let i = 0; i < colors.length; i++) {
@@ -120,11 +132,22 @@
 
   document.body.appendChild(gridContainer);
 
-  document.body.appendChild(document.createElement('br'));
-  document.body.appendChild(document.createElement('br'));
-  document.body.appendChild(document.createElement('br'));
+  // Add debug elements
+  const listEl = document.createElement('ul');
+  const debugObj = {
+    columns,
+    rows,
+    size,
+    animationDuration,
+    colors
+  };
+  for (const [key, value] of Object.entries(debugObj)) {
+    const listItemEl = document.createElement('li');
+    listItemEl.innerText = `${key}: ${value}`; 
+    listEl.appendChild(listItemEl);
+  }
+  document.body.appendChild(listEl);
 
-  // Add color swatches for debugging
   const swatchContainer = document.createElement('div');
   swatchContainer.classList.add('swatch-container');
   for (const color of colors) {
