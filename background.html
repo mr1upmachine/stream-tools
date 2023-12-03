@@ -1,55 +1,141 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="author" content="Sean Hale">
-  <meta name="description" content="Don't be nosey">
-
-  <title>Mr1upMachine</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Background</title>
   <style>
-    html {
-      height: 100%;
-      width: 100%;
+    @keyframes backgroundColorPalette {
+      0% {
+        background: var(--bg-color-1);
+      }
+      15% {
+        background: var(--bg-color-2);
+      }
+      30% {
+        background: var(--bg-color-3);
+      }
+      45% {
+        background: var(--bg-color-4);
+      }
+      60% {
+        background: var(--bg-color-5);
+      }
+      75% {
+        background: var(--bg-color-6);
+      }
+      90% {
+        background: var(--bg-color-7);
+      }
+      100% {
+        background: var(--bg-color-1);
+      }
     }
 
     body {
+      display: grid;
+      place-content: start;
+      height: 100vh;
       margin: 0;
-      height: 100%;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      overflow: hidden;
     }
 
-    .rainbow {
+    .grid {
+      display: grid;
+    }
+
+    .cell {
+      width: 100%;
+      box-sizing: border-box;
       animation-name: backgroundColorPalette;
-      animation-duration: 20s;
       animation-iteration-count: infinite;
-      animation-direction: alternate;
       animation-timing-function: linear;
     }
 
-    @keyframes backgroundColorPalette {
-      0% {
-        background: #ee6055;
-      }
-      25% {
-        background: #60d394;
-      }
-      50% {
-        background: #aaf683;
-      }
-      75% {
-        background: #ffd97d;
-      }
-      100% {
-        background: #ff9b85;
-      }
+    .swatch-container {
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    .swatch {
+      display: flex;
+      width: 60px;
+      height: 60px;
+      justify-content: center;
+      align-items: center;
     }
   </style>
 </head>
+<body>
 
-<body class="rainbow">
+<script>
+  const columns = 48;
+  const rows = 27;
+  const size = '30px';
+  /** Time in seconds for animation */
+  const animationDuration = 120;
+  /** Colors to be used. Supports exactly 7 colors **/
+  const colors = ['#ee6055', '#c288e3', '#52c2ff', "#55b566", '#60d394', '#ffd97d', '#fa875a'];
+
+  // Initialize colors
+  for (let i = 0; i < colors.length; i++) {
+    document.documentElement.style.setProperty(`--bg-color-${i + 1}`, colors[i]);
+  }
+
+  function createDiagonalPercentageArray(c, r, baseColor, targetColor) {
+    const array = [];
+
+    for (let i = 0; i < r; i++) {
+      const row = Array(c).fill(0);
+      const percentage = (i / (r - 1)) * 100;
+
+      // Set the entire row to the diagonal color
+      for (let j = 0; j < c; j++) {
+        row[j] = (i + (c - 1 - j)) * (100 / (c + r - 2));
+      }
+
+      array.push(row);
+    }
+
+    return array;
+  }
+
+  const diagonalArray = createDiagonalPercentageArray(columns, rows);
+
+  // Create color grid
+  const gridContainer = document.createElement('div');
+  gridContainer.classList.add('grid');
+  gridContainer.style.gridTemplateColumns = `repeat(${columns}, ${size})`;
+
+  for (let i = 0; i < diagonalArray.length; i++) {
+    for (let j = 0; j < diagonalArray[i].length; j++) {
+      const cellDiv = document.createElement('div');
+      cellDiv.classList.add('cell');
+      cellDiv.style.height = size;
+      cellDiv.style.animationDelay = `${diagonalArray[i][j] * -1 * animationDuration / 100}s`;
+      cellDiv.style.animationDuration = `${animationDuration}s`;
+      gridContainer.appendChild(cellDiv);
+    }
+  }
+
+  document.body.appendChild(gridContainer);
+
+  document.body.appendChild(document.createElement('br'));
+  document.body.appendChild(document.createElement('br'));
+  document.body.appendChild(document.createElement('br'));
+
+  // Add color swatches for debugging
+  const swatchContainer = document.createElement('div');
+  swatchContainer.classList.add('swatch-container');
+  for (const color of colors) {
+    const swatchDiv = document.createElement('div');
+    swatchDiv.classList.add('swatch');
+    swatchDiv.style.backgroundColor = color;
+    swatchDiv.innerText = color;
+    swatchContainer.appendChild(swatchDiv);
+  }
+  document.body.appendChild(swatchContainer);
+</script>
+
 </body>
 </html>
