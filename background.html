@@ -78,7 +78,7 @@
   const getCommaListParam = (name) => {
     const value = params.get(name);
     console.log('value: ', value);
-    return value ? value.split(',').map(str => `#${str}`) : null
+    return value ? value.split(',') : null
   };
     
   const columns = getNumberParam('columns') ?? 48;
@@ -87,7 +87,8 @@
   /** Time in seconds for animation */
   const animationDuration = getNumberParam('animationDuration') ?? 120;
   /** Colors to be used. Supports exactly 7 colors **/
-  const colors = getCommaListParam('colors') ?? ["#ee6055", "#c288e3", "#52c2ff", "#55b566", "#60d394", "#ffd97d", "#fa875a"];
+  const colorInput = getCommaListParam('colors') ?? ["ee6055", "c288e3", "52c2ff", "55b566", "60d394", "ffd97d", "fa875a"];
+  const colors = colorInput.map(str => `#${str}`);
 
   // Initialize colors
   for (let i = 0; i < colors.length; i++) {
@@ -139,7 +140,7 @@
     rows,
     size,
     animationDuration,
-    colors
+    colors: colorInput
   };
   for (const [key, value] of Object.entries(debugObj)) {
     const listItemEl = document.createElement('li');
