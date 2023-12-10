@@ -74,18 +74,17 @@
     const value = parseInt(params.get(name), 10);
     return isNaN(value) ? null : value;
   };
-  const getStringParam = (name) => params.get(name);
   const getCommaListParam = (name) => {
     const value = params.get(name);
-    console.log('value: ', value);
     return value ? value.split(',') : null
   };
     
   const columns = getNumberParam('columns') ?? 48;
   const rows = getNumberParam('rows') ?? 27;
-  const size = getStringParam('size') ?? '30px';
+  const size = getNumberParam('size') ?? 30;
+  const sizePx = `${size}px`;
   /** Time in seconds for animation */
-  const animationDuration = getNumberParam('animationDuration') ?? 120;
+  const animationDuration = getNumberParam('animationDuration') ?? 90;
   /** Colors to be used. Supports exactly 7 colors **/
   const colorInput = getCommaListParam('colors') ?? ["ee6055", "c288e3", "52c2ff", "55b566", "60d394", "ffd97d", "fa875a"];
   const colors = colorInput.map(str => `#${str}`);
@@ -118,13 +117,13 @@
   // Create color grid
   const gridContainer = document.createElement('div');
   gridContainer.classList.add('grid');
-  gridContainer.style.gridTemplateColumns = `repeat(${columns}, ${size})`;
+  gridContainer.style.gridTemplateColumns = `repeat(${columns}, ${sizePx})`;
 
   for (let i = 0; i < diagonalArray.length; i++) {
     for (let j = 0; j < diagonalArray[i].length; j++) {
       const cellDiv = document.createElement('div');
       cellDiv.classList.add('cell');
-      cellDiv.style.height = size;
+      cellDiv.style.height = sizePx;
       cellDiv.style.animationDelay = `${diagonalArray[i][j] * -1 * animationDuration / 100}s`;
       cellDiv.style.animationDuration = `${animationDuration}s`;
       gridContainer.appendChild(cellDiv);
