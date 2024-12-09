@@ -1,164 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Background</title>
-  <style>
-    @keyframes backgroundColorPalette {
-      0% {
-        background: var(--bg-color-1);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Background</title>
+    <style>
+      body {
+        display: grid;
+        place-content: start;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
       }
-      15% {
-        background: var(--bg-color-2);
-      }
-      30% {
-        background: var(--bg-color-3);
-      }
-      45% {
-        background: var(--bg-color-4);
-      }
-      60% {
-        background: var(--bg-color-5);
-      }
-      75% {
-        background: var(--bg-color-6);
-      }
-      90% {
-        background: var(--bg-color-7);
-      }
-      100% {
-        background: var(--bg-color-1);
-      }
-    }
 
-    body {
-      display: grid;
-      place-content: start;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-    }
+      .grid {
+        display: grid;
+      }
 
-    .grid {
-      display: grid;
-    }
+      .cell {
+        width: 100%;
+        box-sizing: border-box;
+        animation-name: backgroundColorPalette;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+      }
 
-    .cell {
-      width: 100%;
-      box-sizing: border-box;
-      animation-name: backgroundColorPalette;
-      animation-iteration-count: infinite;
-      animation-timing-function: linear;
-    }
+      .swatch-container {
+        display: inline-flex;
+        gap: 3px;
+      }
 
-    .swatch-container {
-      display: inline-flex;
-      gap: 3px;
-    }
-
-    .swatch {
-      display: flex;
-      width: 60px;
-      height: 60px;
-      justify-content: center;
-      align-items: center;
-    }
-  </style>
-</head>
+      .swatch {
+        display: flex;
+        width: 60px;
+        height: 60px;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+    <!DOCTYPE html>
+<html>
 <body>
 
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const getNumberParam = (name) => {
-    const value = parseInt(params.get(name), 10);
-    return isNaN(value) ? null : value;
-  };
-  const getCommaListParam = (name) => {
-    const value = params.get(name);
-    return value ? value.split(',') : null
-  };
-    
-  const columns = getNumberParam('columns') ?? 48;
-  const rows = getNumberParam('rows') ?? 27;
-  const size = getNumberParam('size') ?? 30;
-  const sizePx = `${size}px`;
-  /** Time in seconds for animation */
-  const animationDuration = getNumberParam('animationDuration') ?? 90;
-  /** Colors to be used. Supports exactly 7 colors **/
-  const colorInput = getCommaListParam('colors') ?? ["ee6055", "c288e3", "52c2ff", "55b566", "60d394", "ffd97d", "fa875a"];
-  const colors = colorInput.map(str => `#${str}`);
-
-  // Initialize colors
-  for (let i = 0; i < colors.length; i++) {
-    document.documentElement.style.setProperty(`--bg-color-${i + 1}`, colors[i]);
-  }
-
-  function createDiagonalPercentageArray(c, r, baseColor, targetColor) {
-    const array = [];
-
-    for (let i = 0; i < r; i++) {
-      const row = Array(c).fill(0);
-      const percentage = (i / (r - 1)) * 100;
-
-      // Set the entire row to the diagonal color
-      for (let j = 0; j < c; j++) {
-        row[j] = (i + (c - 1 - j)) * (100 / (c + r - 2));
-      }
-
-      array.push(row);
-    }
-
-    return array;
-  }
-
-  const diagonalArray = createDiagonalPercentageArray(columns, rows);
-
-  // Create color grid
-  const gridContainer = document.createElement('div');
-  gridContainer.classList.add('grid');
-  gridContainer.style.gridTemplateColumns = `repeat(${columns}, ${sizePx})`;
-
-  for (let i = 0; i < diagonalArray.length; i++) {
-    for (let j = 0; j < diagonalArray[i].length; j++) {
-      const cellDiv = document.createElement('div');
-      cellDiv.classList.add('cell');
-      cellDiv.style.height = sizePx;
-      cellDiv.style.animationDelay = `${diagonalArray[i][j] * -1 * animationDuration / 100}s`;
-      cellDiv.style.animationDuration = `${animationDuration}s`;
-      gridContainer.appendChild(cellDiv);
-    }
-  }
-
-  document.body.appendChild(gridContainer);
-
-  // Add debug elements
-  const listEl = document.createElement('ul');
-  const debugObj = {
-    columns,
-    rows,
-    size,
-    animationDuration,
-    colors: colorInput
-  };
-  for (const [key, value] of Object.entries(debugObj)) {
-    const listItemEl = document.createElement('li');
-    listItemEl.innerText = `${key}: ${value}`; 
-    listEl.appendChild(listItemEl);
-  }
-  document.body.appendChild(listEl);
-
-  const swatchContainer = document.createElement('div');
-  swatchContainer.classList.add('swatch-container');
-  for (const color of colors) {
-    const swatchDiv = document.createElement('div');
-    swatchDiv.classList.add('swatch');
-    swatchDiv.style.backgroundColor = color;
-    swatchDiv.innerText = color;
-    swatchContainer.appendChild(swatchDiv);
-  }
-  document.body.appendChild(swatchContainer);
-</script>
+<svg height="1080" width="1920">
+  <polygon points="0,1080 1920,1080 1920,0 0,0" style="fill:blue" />
+  <polygon points="0,1050 30,1050 30,1080 1920,1080 1920,0 0,0" style="fill:lime" />
+    <polygon points="0,1020 30,1020 30,1050 60,1050 60,1080 1920,1080 1920,0 0,0" style="fill:red" />
+  Sorry, your browser does not support inline SVG.
+</svg>
 
 </body>
+</html>
+
+  -->
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const numberParam = (name) => {
+        const value = parseInt(params.get(name), 10);
+        return isNaN(value) ? null : value;
+      };
+      const commaListParam = (name) => {
+        const value = params.get(name);
+        return value ? value.split(",") : null;
+      };
+
+      const columns = numberParam("columns") ?? 48;
+      const rows = numberParam("rows") ?? 27;
+      const size = numberParam("size") ?? 30;
+      const sizePx = `${size}px`;
+      // Time in seconds for animation
+      const animationDuration = numberParam("animationDuration") ?? 90;
+      // Colors to be used. Supports exactly 7 colors
+      const colorInput = commaListParam("colors") ?? [
+        "ee6055",
+        "c288e3",
+        "52c2ff",
+        "55b566",
+        "60d394",
+        "ffd97d",
+        "fa875a",
+      ];
+      const colors = colorInput.map((str) => `#${str}`);
+
+      // Initialize colors
+      for (let i = 0; i < colors.length; i++) {
+        document.documentElement.style.setProperty(
+          `--bg-color-${i + 1}`,
+          colors[i]
+        );
+      }
+
+      // Insert dynamic animation keyframe CSS
+      const styleSheet = document.createElement("style");
+      styleSheet.type = "text/css";
+      document.head.appendChild(styleSheet);
+      const keyframeAnimationStyles = Array.from(
+        { length: colors.length + 1 },
+        (_, i) => parseFloat(((100 / colors.length) * i).toFixed(2))
+      )
+        .map(
+          (percent, i, arr) =>
+            `${percent}%{background:var(--bg-color-${
+              i === arr.length - 1 ? 1 : i + 1
+            })}`
+        )
+        .join("");
+      styleSheet.sheet.insertRule(
+        `@keyframes backgroundColorPalette {${keyframeAnimationStyles}}`
+      );
+
+      // Create diagonal percentage array
+      const diagonalArray = [];
+      for (let i = 0; i < rows; i++) {
+        const row = Array(columns).fill(0);
+        const percentage = (i / (rows - 1)) * 100;
+
+        // Set the entire row to the diagonal color
+        for (let j = 0; j < columns; j++) {
+          row[j] = (i + (columns - 1 - j)) * (100 / (columns + rows - 2));
+        }
+
+        diagonalArray.push(row);
+      }
+
+      // Create color grid
+      const gridContainer = document.createElement("div");
+      gridContainer.classList.add("grid");
+      gridContainer.style.gridTemplateColumns = `repeat(${columns}, ${sizePx})`;
+
+      for (let i = 0; i < diagonalArray.length; i++) {
+        for (let j = 0; j < diagonalArray[i].length; j++) {
+          const cellDiv = document.createElement("div");
+          cellDiv.classList.add("cell");
+          cellDiv.style.height = sizePx;
+          cellDiv.style.animationDelay = `${
+            (diagonalArray[i][j] * -1 * animationDuration) / 100
+          }s`;
+          cellDiv.style.animationDuration = `${animationDuration}s`;
+          gridContainer.appendChild(cellDiv);
+        }
+      }
+
+      document.body.appendChild(gridContainer);
+
+      // Add debug elements
+      const listEl = document.createElement("ul");
+      const debugObj = {
+        columns,
+        rows,
+        size,
+        animationDuration,
+        colors: colorInput,
+      };
+      for (const [key, value] of Object.entries(debugObj)) {
+        const listItemEl = document.createElement("li");
+        listItemEl.innerText = `${key}: ${value}`;
+        listEl.appendChild(listItemEl);
+      }
+      document.body.appendChild(listEl);
+
+      const swatchContainer = document.createElement("div");
+      swatchContainer.classList.add("swatch-container");
+      for (const color of colors) {
+        const swatchDiv = document.createElement("div");
+        swatchDiv.classList.add("swatch");
+        swatchDiv.style.backgroundColor = color;
+        swatchDiv.innerText = color;
+        swatchContainer.appendChild(swatchDiv);
+      }
+      document.body.appendChild(swatchContainer);
+    </script>
+  </body>
 </html>
