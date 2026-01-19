@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -76,13 +76,52 @@
       const animationDuration = numberParam("animationDuration") ?? 90;
       // Colors to be used. Supports exactly 7 colors
       const colorInput = commaListParam("colors") ?? [
-        "ee6055",
-        "c288e3",
-        "52c2ff",
-        "55b566",
-        "60d394",
-        "ffd97d",
-        "fa875a",
+        // "ee6055",
+        // "c288e3",
+        // "52c2ff",
+        // "15a37b",
+        // "60d394",
+        // "ffd97d",
+        // "fa875a",
+
+        // majora
+        // "84307b",
+        // "9e3b34",
+        // "5b803b",
+        // "9e3b34",
+        // "84307b",
+        // "64307b",
+
+        // spirit tracks
+        // "e5f5f4",
+        // "e8ff8d",
+        // "b2bf3c",
+        // "eab5e3",
+        // "bf307f",
+
+        // skyward sword
+        // "9afbf7",
+        // "ba985d",
+        // "463677",
+        // "72cfe5",
+        // "0c586c",
+        // "9afbf7",
+        // "286558",
+
+        // oot randomizer 3 player
+        // "F4EFF4",
+        // "ffa000",
+        // "223309",
+
+        // A Link Between Worlds
+        "7ab566",
+        "445f3e",
+        "a67646",
+        "c2e1f1",
+        "d65ce7",
+        "2d2c42",
+        "3653a0",
+        "c2e1f1",
       ];
       const colors = colorInput.map((str) => `#${str}`);
 
@@ -90,7 +129,7 @@
       for (let i = 0; i < colors.length; i++) {
         document.documentElement.style.setProperty(
           `--bg-color-${i + 1}`,
-          colors[i]
+          colors[i],
         );
       }
 
@@ -100,17 +139,17 @@
       document.head.appendChild(styleSheet);
       const keyframeAnimationStyles = Array.from(
         { length: colors.length + 1 },
-        (_, i) => parseFloat(((100 / colors.length) * i).toFixed(2))
+        (_, i) => parseFloat(((100 / colors.length) * i).toFixed(2)),
       )
         .map(
           (percent, i, arr) =>
             `${percent}%{background:var(--bg-color-${
               i === arr.length - 1 ? 1 : i + 1
-            })}`
+            })}`,
         )
         .join("");
       styleSheet.sheet.insertRule(
-        `@keyframes backgroundColorPalette {${keyframeAnimationStyles}}`
+        `@keyframes backgroundColorPalette {${keyframeAnimationStyles}}`,
       );
 
       // Create diagonal percentage array
