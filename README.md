@@ -47,3 +47,7 @@ Arguments that are set after the code is run.
 | `%quoteGame%`     | Game being played when quoted (only set if a quote was found)                 |
 | `%quotePlatform%` | Platform (only set if a quote was found)                                      |
 | `%quoteDate%`     | Date formatted as yyyy-MM-dd (only set if a quote was found)                  |
+
+**Example**
+
+<img src="assets\quote-implementation-example.png" width="600" alt="Example quote implementation in Streamer.bot">
