@@ -50,10 +50,14 @@ public class CPHInline
     private string ResolveString(string argKey, string globalKey, string defaultValue)
     {
         if (args.ContainsKey(argKey) && !string.IsNullOrWhiteSpace(args[argKey].ToString()))
+        {
             return args[argKey].ToString();
+        }
         string global = CPH.GetGlobalVar<string>(globalKey, true);
         if (!string.IsNullOrWhiteSpace(global))
+        {
             return global;
+        }
         return defaultValue;
     }
 
@@ -61,17 +65,27 @@ public class CPHInline
     private bool ResolveBool(string argKey, string globalKey, bool defaultValue)
     {
         if (args.ContainsKey(argKey) && bool.TryParse(args[argKey].ToString(), out bool argVal))
+        {
             return argVal;
+        }
         string global = CPH.GetGlobalVar<string>(globalKey, true);
         if (!string.IsNullOrWhiteSpace(global) && bool.TryParse(global, out bool globalVal))
+        {
             return globalVal;
+        }
         return defaultValue;
     }
 
     /* Format a quote using a template and QuoteData properties */
     private string FormatQuote(string template, QuoteData q)
     {
-        return template.Replace("%id%", q.Id.ToString()).Replace("%quote%", q.Quote).Replace("%user%", q.User ?? "").Replace("%game%", q.GameName ?? "").Replace("%platform%", q.Platform ?? "").Replace("%date%", q.Timestamp.ToString("yyyy-MM-dd"));
+        return template
+            .Replace("%id%", q.Id.ToString())
+            .Replace("%quote%", q.Quote)
+            .Replace("%user%", q.User ?? "")
+            .Replace("%game%", q.GameName ?? "")
+            .Replace("%platform%", q.Platform ?? "")
+            .Replace("%date%", q.Timestamp.ToString("yyyy-MM-dd"));
     }
 
     /* Set individual quote properties as arguments */
@@ -90,18 +104,24 @@ public class CPHInline
     {
         int count = CPH.GetQuoteCount();
         if (count == 0)
+        {
             return noQuotes;
+        }
 
         // Collect valid IDs first since there may be gaps from deleted quotes
         var validIds = new System.Collections.Generic.List<int>();
         for (int i = 1; i <= count; i++)
         {
             if (CPH.GetQuote(i) != null)
+            {
                 validIds.Add(i);
+            }
         }
 
         if (validIds.Count == 0)
+        {
             return noQuotes;
+        }
 
         int pickId = validIds[new Random().Next(validIds.Count)];
         var pick = CPH.GetQuote(pickId);
