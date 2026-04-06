@@ -3,6 +3,8 @@ using System;
 public class CPHInline
 {
     /*
+     * https://github.com/mr1upmachine/streamerbot-tools/blob/main/get-quote.cs
+     *
      * !quote <word>   — returns the first quote containing that word
      * !quote <number> — returns the quote with that ID
      * !quote          — shows usage message, or a random quote if quoteRandomOnEmpty is "true"
@@ -15,7 +17,7 @@ public class CPHInline
      *   %id%       — quote ID number
      *   %quote%    — the quote text
      *   %user%     — the user who said the quote
-     *   %game%     — the game being played when quoted
+     *   %game%     — the game being played when quoted (if none is found, set to "Unknown")
      *   %platform% — the platform (e.g. Twitch)
      *   %date%     — timestamp formatted as yyyy-MM-dd
      *
@@ -28,7 +30,8 @@ public class CPHInline
      *   quoteRandomOnEmpty   — if "true", !quote with no input returns a random quote instead of usage message
      *
      * Output:
-     *   quoteMessage         — the resulting message, set as an argument for use in subsequent sub-actions
+     *   quoteMessage         — the resulting message (sucsess or fail), set as an argument for use in subsequent sub-actions
+     *   quoteExists          — whether or not the quote was found
      *   quoteId              — quote ID (only set if a quote was found)
      *   quote                — quote text (only set if a quote was found)
      *   quoteUser            — user who was quoted (only set if a quote was found)
@@ -40,9 +43,9 @@ public class CPHInline
      *   Quote #%id% (%user%, %game%): %quote%
      */
     private const string DefaultTemplate = "Quote #%id%: %quote%";
-    private const string DefaultNotFoundWord = "No quotes found containing \"%input%\".";
-    private const string DefaultNotFoundId = "No quote found with ID #%id%.";
-    private const string DefaultNoQuotes = "No quotes found.";
+    private const string DefaultNotFoundWord = "No quotes found containing \"%input%\"";
+    private const string DefaultNotFoundId = "No quote found with ID #%id%";
+    private const string DefaultNoQuotes = "No quotes found";
     private const string DefaultUsage = "Usage: !quote <word> or !quote <number>";
     private const bool DefaultRandomOnEmpty = true;
 
@@ -129,9 +132,9 @@ public class CPHInline
         return FormatQuote(template, pick);
     }
 
-    public bool Execute()
+    public bool GetQuote()
     {
-        // Get all the variables
+                // Get all the variables
         string input = args.ContainsKey("rawInput") ? args["rawInput"].ToString().Trim() : "";
         string template = ResolveString("quoteTemplate", "quoteTemplate", DefaultTemplate);
         string notFoundWord = ResolveString("quoteNotFoundWord", "quoteNotFoundWord", DefaultNotFoundWord);
@@ -144,30 +147,30 @@ public class CPHInline
         if (string.IsNullOrEmpty(input))
         {
             CPH.SetArgument("quoteMessage", randomOnEmpty ? GetRandomQuote(template, noQuotes) : usage);
-            return true;
+            return false;
+        }
+
+        // Check if there are no quotes
+        int count = CPH.GetQuoteCount();
+        if (count == 0)
+        {
+            CPH.SetArgument("quoteMessage", noQuotes);
+            return false;
         }
 
         // Attempt to get quote by id
         if (int.TryParse(input, out int quoteId))
         {
-            var q = CPH.GetQuote(quoteId);
-            if (q != null)
-            {
+            try {
+                var q = CPH.GetQuote(quoteId);
                 SetQuoteArgs(q);
                 CPH.SetArgument("quoteMessage", FormatQuote(template, q));
-            }
-            else
-            {
+                return true;
+            } 
+            catch (Exception ex) {
                 CPH.SetArgument("quoteMessage", notFoundId.Replace("%id%", quoteId.ToString()));
             }
-            return true;
-        }
-
-        int count = CPH.GetQuoteCount();
-        if (count == 0)
-        {
-            CPH.SetArgument("quoteMessage", noQuotes);
-            return true;
+            return false;
         }
 
         // Find first quote that matches
@@ -183,6 +186,20 @@ public class CPHInline
         }
 
         CPH.SetArgument("quoteMessage", notFoundWord.Replace("%input%", input));
-        return true;
+        return false;
+    }
+
+    public bool Execute()
+    {
+        try
+        {
+            bool result = GetQuote();
+            CPH.SetArgument("quoteExists", result);
+            return result;
+        } catch (Exception ex) {
+            CPH.SetArgument("quoteMessage", "Something went wrong.");
+            CPH.SetArgument("quoteExists", false);
+            return false;
+        }
     }
 }
