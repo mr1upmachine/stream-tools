@@ -159,7 +159,7 @@ public class CPHInline
         }
 
         // Attempt to get quote by id
-        if (int.TryParse(input, out int quoteId))
+        if (int.TryParse(input.TrimStart('#'), out int quoteId))
         {
             try {
                 var q = CPH.GetQuote(quoteId);
