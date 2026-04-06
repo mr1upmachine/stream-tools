@@ -30,7 +30,7 @@ public class CPHInline
      * Output:
      *   quoteMessage         — the resulting message, set as an argument for use in subsequent sub-actions
      *   quoteId              — quote ID (only set if a quote was found)
-     *   quoteText            — quote text (only set if a quote was found)
+     *   quote                — quote text (only set if a quote was found)
      *   quoteUser            — user who was quoted (only set if a quote was found)
      *   quoteGame            — game being played when quoted (only set if a quote was found)
      *   quotePlatform        — platform (only set if a quote was found)
@@ -92,7 +92,7 @@ public class CPHInline
     private void SetQuoteArgs(QuoteData q)
     {
         CPH.SetArgument("quoteId", q.Id);
-        CPH.SetArgument("quoteText", q.Quote);
+        CPH.SetArgument("quote", q.Quote);
         CPH.SetArgument("quoteUser", q.User ?? "");
         CPH.SetArgument("quoteGame", q.GameName ?? "");
         CPH.SetArgument("quotePlatform", q.Platform ?? "");

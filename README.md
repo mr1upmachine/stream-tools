@@ -42,7 +42,7 @@ Arguments that are set after the code is run.
 | ----------------- | ----------------------------------------------------------------------------- |
 | `%quoteMessage%`  | The resulting message — use in a Send Message sub-action after this code runs |
 | `%quoteId%`       | Quote ID (only set if a quote was found)                                      |
-| `%quoteText%`     | Quote text (only set if a quote was found)                                    |
+| `%quote%`         | Quote text (only set if a quote was found)                                    |
 | `%quoteUser%`     | User who was quoted (only set if a quote was found)                           |
 | `%quoteGame%`     | Game being played when quoted (only set if a quote was found)                 |
 | `%quotePlatform%` | Platform (only set if a quote was found)                                      |
