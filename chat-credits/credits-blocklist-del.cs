@@ -40,7 +40,7 @@ public class CPHInline
             if (removed == 0)
             {
                 CPH.SendMessage($"{input} was not found on the credits blocklist.");
-                return false;
+                return true;
             }
 
             File.WriteAllLines(blocklistPath, blocklist);

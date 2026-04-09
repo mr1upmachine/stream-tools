@@ -108,28 +108,24 @@ public class CPHInline
         int count = CPH.GetQuoteCount();
         if (count == 0)
         {
-            return noQuotes;
+            return null;
         }
 
         // Collect valid IDs first since there may be gaps from deleted quotes
-        // HACK: check 10x past the quotes because Streamer.bot does not have a way to know all quote ids
         var validIds = new System.Collections.Generic.List<int>();
-        for (int i = 1; i <= count * 10; i++)
+        int i = 1;
+        while (validIds.Count < count)
         {
-            try
-            {
-                CPH.GetQuote(i);
+            QuoteData candidate = null;
+            try { candidate = CPH.GetQuote(i); } catch (Exception) { }
+            if (candidate != null)
                 validIds.Add(i);
-            }
-            catch (Exception)
-            {
-                // do nothing
-            }
+            i++;
         }
 
         if (validIds.Count == 0)
         {
-            return noQuotes;
+            return null;
         }
 
         int pickId = validIds[new Random().Next(validIds.Count)];
@@ -154,8 +150,14 @@ public class CPHInline
         // Handle !quote called with no input
         if (string.IsNullOrEmpty(input))
         {
-            CPH.SetArgument("quoteMessage", randomOnEmpty ? GetRandomQuote(template, noQuotes) : usage);
-            return false;
+            if (!randomOnEmpty)
+            {
+                CPH.SetArgument("quoteMessage", usage);
+                return false;
+            }
+            string randomMsg = GetRandomQuote(template, noQuotes);
+            CPH.SetArgument("quoteMessage", randomMsg ?? noQuotes);
+            return randomMsg != null;
         }
 
         // Check if there are no quotes
@@ -169,30 +171,36 @@ public class CPHInline
         // Attempt to get quote by id
         if (int.TryParse(input.TrimStart('#'), out int quoteId))
         {
-            try
+            QuoteData q = null;
+            try { q = CPH.GetQuote(quoteId); } catch (Exception) { }
+            if (q != null)
             {
-                var q = CPH.GetQuote(quoteId);
                 SetQuoteArgs(q);
                 CPH.SetArgument("quoteMessage", FormatQuote(template, q));
                 return true;
             }
-            catch (Exception)
-            {
-                CPH.SetArgument("quoteMessage", notFoundId.Replace("%id%", quoteId.ToString()));
-            }
+            CPH.SetArgument("quoteMessage", notFoundId.Replace("%id%", quoteId.ToString()));
             return false;
         }
 
         // Find first quote that matches
-        for (int i = 1; i <= count; i++)
+        int searchIdx = 1;
+        int searchFound = 0;
+        while (searchFound < count)
         {
-            var q = CPH.GetQuote(i);
-            if (q != null && q.Quote.IndexOf(input, StringComparison.OrdinalIgnoreCase) >= 0)
+            QuoteData q = null;
+            try { q = CPH.GetQuote(searchIdx); } catch (Exception) { }
+            if (q != null)
             {
-                SetQuoteArgs(q);
-                CPH.SetArgument("quoteMessage", FormatQuote(template, q));
-                return true;
+                searchFound++;
+                if (q.Quote.IndexOf(input, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    SetQuoteArgs(q);
+                    CPH.SetArgument("quoteMessage", FormatQuote(template, q));
+                    return true;
+                }
             }
+            searchIdx++;
         }
 
         CPH.SetArgument("quoteMessage", notFoundWord.Replace("%input%", input));
@@ -205,13 +213,12 @@ public class CPHInline
         {
             bool result = GetQuote();
             CPH.SetArgument("quoteExists", result);
-            return result;
         }
         catch (Exception)
         {
             CPH.SetArgument("quoteMessage", "Something went wrong.");
             CPH.SetArgument("quoteExists", false);
-            return false;
         }
+        return true;
     }
 }

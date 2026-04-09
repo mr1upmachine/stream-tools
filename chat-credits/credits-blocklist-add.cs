@@ -33,7 +33,7 @@ public class CPHInline
         if (blocklist.Exists(u => u.Equals(input, StringComparison.OrdinalIgnoreCase)))
         {
             CPH.SendMessage($"{input} is already on the credits blocklist.");
-            return false;
+            return true;
         }
 
         try
