@@ -86,7 +86,7 @@ public class CPHInline
             .Replace("%id%", q.Id.ToString())
             .Replace("%quote%", q.Quote)
             .Replace("%user%", q.User ?? "")
-            .Replace("%game%", q.GameName ?? "")
+            .Replace("%game%", q.GameName ?? "unknown")
             .Replace("%platform%", q.Platform ?? "")
             .Replace("%date%", q.Timestamp.ToString("yyyy-MM-dd"));
     }
@@ -97,7 +97,7 @@ public class CPHInline
         CPH.SetArgument("quoteId", q.Id);
         CPH.SetArgument("quote", q.Quote);
         CPH.SetArgument("quoteUser", q.User ?? "");
-        CPH.SetArgument("quoteGame", q.GameName ?? "");
+        CPH.SetArgument("quoteGame", q.GameName ?? "unknown");
         CPH.SetArgument("quotePlatform", q.Platform ?? "");
         CPH.SetArgument("quoteDate", q.Timestamp.ToString("yyyy-MM-dd"));
     }
@@ -112,12 +112,18 @@ public class CPHInline
         }
 
         // Collect valid IDs first since there may be gaps from deleted quotes
+        // HACK: check 10x past the quotes because Streamer.bot does not have a way to know all quote ids
         var validIds = new System.Collections.Generic.List<int>();
-        for (int i = 1; i <= count; i++)
+        for (int i = 1; i <= count * 10; i++)
         {
-            if (CPH.GetQuote(i) != null)
+            try
             {
+                CPH.GetQuote(i);
                 validIds.Add(i);
+            }
+            catch (Exception)
+            {
+                // do nothing
             }
         }
 
