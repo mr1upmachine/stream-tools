@@ -30,7 +30,7 @@ public class CPHInline
      *   quoteRandomOnEmpty   — if "true", !quote with no input returns a random quote instead of usage message
      *
      * Output:
-     *   quoteMessage         — the resulting message (sucsess or fail), set as an argument for use in subsequent sub-actions
+     *   quoteMessage         — the resulting message (success or fail), set as an argument for use in subsequent sub-actions
      *   quoteExists          — whether or not the quote was found
      *   quoteId              — quote ID (only set if a quote was found)
      *   quote                — quote text (only set if a quote was found)
@@ -52,9 +52,9 @@ public class CPHInline
     /* Resolve string variable from arguments or global context */
     private string ResolveString(string argKey, string globalKey, string defaultValue)
     {
-        if (args.ContainsKey(argKey) && !string.IsNullOrWhiteSpace(args[argKey].ToString()))
+        if (CPH.TryGetArg(argKey, out string argVal) && !string.IsNullOrWhiteSpace(argVal))
         {
-            return args[argKey].ToString();
+            return argVal;
         }
         string global = CPH.GetGlobalVar<string>(globalKey, true);
         if (!string.IsNullOrWhiteSpace(global))
@@ -67,9 +67,9 @@ public class CPHInline
     /* Resolve bool variable from arguments or global context */
     private bool ResolveBool(string argKey, string globalKey, bool defaultValue)
     {
-        if (args.ContainsKey(argKey) && bool.TryParse(args[argKey].ToString(), out bool argVal))
+        if (CPH.TryGetArg(argKey, out string argVal) && bool.TryParse(argVal, out bool parsed))
         {
-            return argVal;
+            return parsed;
         }
         string global = CPH.GetGlobalVar<string>(globalKey, true);
         if (!string.IsNullOrWhiteSpace(global) && bool.TryParse(global, out bool globalVal))
@@ -134,8 +134,10 @@ public class CPHInline
 
     public bool GetQuote()
     {
-                // Get all the variables
-        string input = args.ContainsKey("rawInput") ? args["rawInput"].ToString().Trim() : "";
+        // Get all the variables
+        CPH.TryGetArg("rawInput", out string rawInput);
+        string input = rawInput?.Trim() ?? "";
+
         string template = ResolveString("quoteTemplate", "quoteTemplate", DefaultTemplate);
         string notFoundWord = ResolveString("quoteNotFoundWord", "quoteNotFoundWord", DefaultNotFoundWord);
         string notFoundId = ResolveString("quoteNotFoundId", "quoteNotFoundId", DefaultNotFoundId);
@@ -161,13 +163,15 @@ public class CPHInline
         // Attempt to get quote by id
         if (int.TryParse(input.TrimStart('#'), out int quoteId))
         {
-            try {
+            try
+            {
                 var q = CPH.GetQuote(quoteId);
                 SetQuoteArgs(q);
                 CPH.SetArgument("quoteMessage", FormatQuote(template, q));
                 return true;
-            } 
-            catch (Exception ex) {
+            }
+            catch (Exception)
+            {
                 CPH.SetArgument("quoteMessage", notFoundId.Replace("%id%", quoteId.ToString()));
             }
             return false;
@@ -196,7 +200,9 @@ public class CPHInline
             bool result = GetQuote();
             CPH.SetArgument("quoteExists", result);
             return result;
-        } catch (Exception ex) {
+        }
+        catch (Exception)
+        {
             CPH.SetArgument("quoteMessage", "Something went wrong.");
             CPH.SetArgument("quoteExists", false);
             return false;
