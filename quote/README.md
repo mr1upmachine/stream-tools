@@ -34,7 +34,7 @@ Search or retrieve quotes stored in Streamer.bot.
 
 ### !quoteadd
 
-Add a new quote to the quote list. The current game is captured automatically from Streamer.bot at the time the command is run. After adding, the new quote is retrieved and formatted using the same template as `!quote`, so the confirmation message in chat will match your configured style.
+Add a new quote to the quote list. After adding, the new quote is retrieved and formatted using the same template as `!quote`.
 
 **Usage:** `!quoteadd <quote text>`
 
@@ -61,11 +61,6 @@ Delete a quote by ID. Does NOT do a quote lookup — you must provide the exact 
 ```
 
 > **Permissions:** Moderators and broadcaster only.
-
-**Validation**
-
-- The input must be a valid number — non-numeric input will return a usage message
-- The ID must exist — an invalid ID will return an error message without attempting a delete
 
 ---
 
@@ -194,58 +189,6 @@ Controls whether `!quote` with no input returns a random quote or a usage hint.
 ```
 !setquoterandom false
 ```
-
----
-
-## Scripts
-
-### get-quote
-
-Handles the `!quote` command. Resolves templates and formats the output message.
-
-**Output**
-
-| Argument          | Description                                                                   |
-| ----------------- | ----------------------------------------------------------------------------- |
-| `%quoteMessage%`  | The resulting message — use in a Send Message sub-action after this code runs |
-| `%quoteExists%`   | Whether or not the quote was found                                            |
-| `%quoteId%`       | Quote ID (only set if a quote was found)                                      |
-| `%quote%`         | Quote text (only set if a quote was found)                                    |
-| `%quoteUser%`     | User who was quoted (only set if a quote was found)                           |
-| `%quoteGame%`     | Game being played when quoted (only set if a quote was found)                 |
-| `%quotePlatform%` | Platform (only set if a quote was found)                                      |
-| `%quoteDate%`     | Date formatted as yyyy-MM-dd (only set if a quote was found)                  |
-
----
-
-### add-quote
-
-Handles the `!quoteadd` command. Adds a new quote and then runs get-quote to format the confirmation message.
-
-**Output**
-
-| Argument          | Description                                          |
-| ----------------- | ---------------------------------------------------- |
-| `%quoteMessage%`  | The formatted confirmation message for the new quote |
-| `%quoteId%`       | The ID assigned to the newly added quote             |
-| `%quote%`         | The quote text                                       |
-| `%quoteUser%`     | User who was quoted                                  |
-| `%quoteGame%`     | Game that was active when the quote was added        |
-| `%quotePlatform%` | Platform                                             |
-| `%quoteDate%`     | Date the quote was added, formatted as yyyy-MM-dd    |
-
----
-
-### delete-quote
-
-Handles the `!quotedel` command. Validates the input and deletes the quote if found.
-
-**Output**
-
-| Argument         | Description                                 |
-| ---------------- | ------------------------------------------- |
-| `%quoteMessage%` | The resulting message (success or failure)  |
-| `%quoteExists%`  | Whether a quote with the given ID was found |
 
 ---
 
